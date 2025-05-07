@@ -4,7 +4,7 @@
   import { page } from '$app/stores';
   
   // Get the note key from the URL parameters
-  $: noteKey = $page.params.noteKey as NoteKey;
+  let noteKey = $derived($page.params.noteKey as NoteKey);
 </script>
 
 <NotePage noteName={noteKey} />

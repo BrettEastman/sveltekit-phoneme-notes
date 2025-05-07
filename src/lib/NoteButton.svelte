@@ -2,8 +2,12 @@
   import { createEventDispatcher } from 'svelte';
   import type { Note } from './types';
   
-  export let note: Note;
-  export let active = false;
+  interface Props {
+    note: Note;
+    active?: boolean;
+  }
+
+  let { note, active = false }: Props = $props();
   
   const dispatch = createEventDispatcher();
   
@@ -11,12 +15,12 @@
     dispatch('select', note);
   };
   
-  $: buttonClass = active ? 'note-button active' : 'note-button';
+  let buttonClass = $derived(active ? 'note-button active' : 'note-button');
 </script>
 
 <button 
   class={buttonClass}
-  on:click={handleClick}
+  onclick={handleClick}
   aria-label={`Play note ${note.name}`}
 >
   {note.name}

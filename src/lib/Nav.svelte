@@ -3,7 +3,7 @@
   import { noteKeys } from './notes';
   
   // Derive the active note from the current route
-  $: activeNote = $page.params.noteKey;
+  let activeNote = $derived($page.params.noteKey);
 </script>
 
 <nav>

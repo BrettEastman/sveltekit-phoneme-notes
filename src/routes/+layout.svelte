@@ -1,12 +1,17 @@
 <script lang="ts">
   import Nav from '$lib/Nav.svelte';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
 <main>
   <Nav />
   
   <div class="app-container">
-    <slot />
+    {@render children?.()}
     
     <footer>
       <p>Built with <a href="https://svelte.dev" target="_blank" rel="noreferrer">Svelte</a> and <a href="https://www.vexflow.com" target="_blank" rel="noreferrer">VexFlow</a></p>
