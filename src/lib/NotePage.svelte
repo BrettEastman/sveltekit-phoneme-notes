@@ -1,27 +1,33 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import NotationRenderer from './NotationRenderer.svelte';
-  import { playNote, initAudio } from './audio';
-  import { noteData } from './notes';
-  import type { NoteKey } from './types';
+  import { onMount } from "svelte";
+  import NotationRenderer from "./NotationRenderer.svelte";
+  import { playNote, initAudio } from "./audio";
+  import { noteData } from "./notes";
+  import type { NoteKey } from "./types";
 
-  export let noteName: NoteKey;
-  
+  interface Props {
+    noteName: NoteKey;
+  }
+
+  let { noteName }: Props = $props();
+
   let audioInitialized = false;
-  let currentNote = noteData[noteName];
-  
+  let currentNote = $state(noteData[noteName]);
+
   // Update currentNote when noteName changes
-  $: currentNote = noteData[noteName];
-  
+  $effect(() => {
+    currentNote = noteData[noteName];
+  });
+
   onMount(async () => {
     try {
       await initAudio();
       audioInitialized = true;
     } catch (error) {
-      console.error('Failed to initialize audio:', error);
+      console.error("Failed to initialize audio:", error);
     }
   });
-  
+
   const handlePlay = async () => {
     if (!audioInitialized) {
       await initAudio();
@@ -33,16 +39,21 @@
 
 <div class="note-page">
   <h2>Note {currentNote.name}</h2>
-  
+
   <div class="note-content">
     <div class="notation-wrapper">
-      <NotationRenderer activeNote={noteName} showAllNotes={false} width={300} height={120} />
+      <NotationRenderer
+        activeNote={noteName}
+        showAllNotes={false}
+        width={300}
+        height={120}
+      />
     </div>
-    
+
     <div class="note-info">
       <p>Frequency: {currentNote.frequency} Hz</p>
       <p>Octave: {currentNote.octave}</p>
-      <button class="play-button" on:click={handlePlay}>
+      <button class="play-button" onclick={handlePlay}>
         Play Note {currentNote.name}
       </button>
     </div>
@@ -83,7 +94,7 @@
   }
 
   .play-button {
-    background-color: #007AFF;
+    background-color: #007aff;
     color: white;
     padding: 12px 24px;
     border-radius: 8px;

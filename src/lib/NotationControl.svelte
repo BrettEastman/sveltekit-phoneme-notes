@@ -6,8 +6,8 @@
   import { noteData, noteKeys } from './notes';
   import type { NoteKey } from './types';
   
-  let activeNote: NoteKey | null = null;
-  let audioInitialized = false;
+  let activeNote: NoteKey | null = $state(null);
+  let audioInitialized = $state(false);
   
   onMount(async () => {
     try {
@@ -52,7 +52,7 @@
   {#if !audioInitialized}
     <div class="audio-init">
       <p>Audio requires user interaction to initialize</p>
-      <button class="init-button" on:click={initializeAudio}>
+      <button class="init-button" onclick={initializeAudio}>
         Initialize Audio
       </button>
     </div>
