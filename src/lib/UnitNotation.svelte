@@ -20,7 +20,7 @@
     height?: number;
   }
 
-  let { unit, width = 360, height = 150 }: Props = $props();
+  let { unit, width = 360, height = 220 }: Props = $props();
 
   let container: HTMLDivElement | undefined = $state();
 
@@ -34,7 +34,8 @@
     const context = renderer.getContext();
     context.setFont("Arial", 10);
 
-    const stave = new Stave(10, 20, width - 20);
+    // Leave headroom above the stave for ledger-line notes up to A6
+    const stave = new Stave(10, 70, width - 20);
     stave.addClef("treble").setContext(context).draw();
 
     const parsed = parseNote(unit.note);
