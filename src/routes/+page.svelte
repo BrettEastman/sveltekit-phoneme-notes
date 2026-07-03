@@ -4,7 +4,6 @@
 </script>
 
 <header>
-  <h1>Phonétique</h1>
   <p>A music cryptogram — every sound has a note. Select one to explore it.</p>
 </header>
 
@@ -26,13 +25,6 @@
   header {
     text-align: center;
     margin-bottom: 40px;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0;
-    color: #1d1d1f;
   }
 
   header p {
@@ -93,10 +85,6 @@
   }
 
   @media (max-width: 768px) {
-    h1 {
-      font-size: 2rem;
-    }
-
     header p {
       font-size: 1rem;
     }
