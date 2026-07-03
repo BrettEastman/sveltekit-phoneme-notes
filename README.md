@@ -1,38 +1,82 @@
-# sv
+# Phonétique — A Music Cryptogram
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A web app for exploring a musical cryptogram: a composition system that maps each sound of a language to a specific musical pitch and duration, so that text can be transcribed into music.
 
-## Creating a project
+The current alphabet is the **French phoneme inventory** — 37 sounds (vowels, semivowels, nasal vowels, plosives, nasal consonants, fricatives, and liquids), each paired with a note and rhythm from the composition *FLUTE – PHONETIQUE*. Every sound gets its own page showing:
 
-If you're seeing this, you've probably already done this step. Congrats!
+- The phoneme symbol (IPA), with an example French word
+- Its note rendered in standard music notation — including accidentals, dots, ties, and grace-note articulations from the original score
+- A play button that sounds the note with its exact notated duration
+- Previous/next navigation through the full set
 
-```bash
-# create a new project in the current directory
-npx sv create
+The home page is a browsable index of all sounds, grouped by phonetic category.
 
-# create a new project in my-app
-npx sv create my-app
+## How it works
+
+The entire app is driven by a single data file: [`src/lib/data/units.ts`](src/lib/data/units.ts). Each entry is a `SoundUnit`:
+
+```ts
+{
+  slug: 'gn',        // URL-safe id → /unit/gn
+  symbol: 'ɲ',       // displayed symbol
+  example: 'agneau', // example word
+  category: 'nasal-consonant',
+  note: 'A6',        // scientific pitch name (Tone.js-compatible)
+  duration: '8n.',   // Tone.js-style duration, for reference
+  beats: 0.75,       // canonical duration in quarter-note beats
+  grace: { note: 'A6', notehead: 'x' } // optional articulation ornament
+}
+```
+
+`beats` is the source of truth: playback converts it to seconds (60 BPM, so one beat = one second), and the notation renderer decomposes it into notated values — e.g. `2.75` beats becomes a half note tied to a dotted eighth.
+
+The data was normalized from a Sibelius MusicXML export of the original score. Tied notes in the score are collapsed into a single total duration; grace notes are preserved as ornaments.
+
+### Swappable alphabets
+
+The unit set is intentionally generic. Routing (`/unit/[slug]`), components, and audio never hardcode the symbols or their count — swapping in a different alphabet (A–Z letters, a different language's phonemes) only requires providing a new `SoundUnit[]` array.
+
+## Tech stack
+
+| Layer | Tool |
+| --- | --- |
+| Framework | [SvelteKit](https://svelte.dev/docs/kit) with [Svelte 5](https://svelte.dev) (runes) |
+| Language | TypeScript |
+| Audio | [Tone.js](https://tonejs.github.io) — synth playback with precise, explicit note durations |
+| Notation | [VexFlow](https://www.vexflow.com) — SVG music engraving |
+| Package manager | pnpm |
+
+## Project structure
+
+```
+src/
+├── lib/
+│   ├── data/
+│   │   └── units.ts        # The cryptogram mapping — the app's single data source
+│   ├── types.ts            # SoundUnit and supporting types
+│   ├── music.ts            # Pitch parsing, beats → notation, duration labels
+│   ├── audio.ts            # Shared Tone.js synth, playUnit / playNote
+│   ├── UnitNotation.svelte # VexFlow renderer for one unit (ties, dots, graces)
+│   ├── UnitPage.svelte     # Full unit page: symbol, notation, play, prev/next
+│   └── ...                 # Nav + original scale-demo components
+└── routes/
+    ├── +page.svelte        # Index of all sounds, grouped by category
+    ├── unit/[slug]/        # One page per sound, driven by units.ts
+    └── scale/              # The original proof-of-concept scale player
 ```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm install
+pnpm dev        # start the dev server
+pnpm check      # type-check with svelte-check
+pnpm build      # production build
+pnpm preview    # preview the production build
 ```
 
-## Building
+## Roadmap
 
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- Transcription: type a word or phrase and hear it played as a melody
+- Additional alphabets (A–Z letters, other phoneme sets)
+- X noteheads on percussive grace-note ornaments, matching the score
