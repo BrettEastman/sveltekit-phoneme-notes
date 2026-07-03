@@ -1,23 +1,17 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { noteKeys } from './notes';
-  
-  // Derive the active note from the current route
-  let activeNote = $derived($page.params.noteKey);
+
+  let pathname = $derived($page.url.pathname);
 </script>
 
 <nav>
   <div class="nav-container">
-    <a href="/" class="nav-link" class:active={!activeNote}>Home</a>
-    {#each noteKeys as note}
-      <a 
-        href="/note/{note}" 
-        class="nav-link" 
-        class:active={activeNote === note}
-      >
-        Note {note}
-      </a>
-    {/each}
+    <a href="/" class="nav-link" class:active={pathname === '/' || pathname.startsWith('/unit')}>
+      Sounds
+    </a>
+    <a href="/scale" class="nav-link" class:active={pathname === '/scale'}>
+      Scale Demo
+    </a>
   </div>
 </nav>
 
