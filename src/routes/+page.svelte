@@ -1,10 +1,14 @@
 <script lang="ts">
-  import { categoryLabels, categoryOrder, units } from '$lib/data/units';
-  import { prettyNoteName } from '$lib/music';
+  import { categoryLabels, categoryOrder, units } from "$lib/data/units";
+  import { prettyNoteName } from "$lib/music";
 </script>
 
 <header>
-  <p>A music cryptogram — every sound has a note. Select one to explore it.</p>
+  <p>
+    A musical cryptogram: a composition system that maps each sound of a
+    language to a specific musical pitch and duration. This current iteration is
+    an index of French phonemes (37 sounds) for transcribing French into music.
+  </p>
 </header>
 
 {#each categoryOrder as category}
@@ -14,7 +18,9 @@
       {#each units.filter((unit) => unit.category === category) as unit}
         <a class="unit-tile" href="/unit/{unit.slug}">
           <span class="tile-symbol">{unit.symbol}</span>
-          <span class="tile-note">{prettyNoteName(unit.note)} · {unit.duration}</span>
+          <span class="tile-note"
+            >{prettyNoteName(unit.note)} · {unit.duration}</span
+          >
         </a>
       {/each}
     </div>
@@ -23,8 +29,9 @@
 
 <style>
   header {
-    text-align: center;
-    margin-bottom: 40px;
+    text-align: left;
+    margin-bottom: 25px;
+    padding-inline: 8px;
   }
 
   header p {
