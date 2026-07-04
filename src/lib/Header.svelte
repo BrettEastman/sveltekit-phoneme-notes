@@ -1,5 +1,5 @@
 <header>
-  <a href="/" class="title">Cryptogram Phonétique</a>
+  <a href="/" class="title">Cryptogramme Phonétique</a>
 </header>
 
 <style>
