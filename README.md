@@ -1,11 +1,11 @@
-# Phonétique — A Music Cryptogram
+# A Cryptogram for Converting Language to Music
 
-A web app for exploring a musical cryptogram: a composition system that maps each sound of a language to a specific musical pitch and duration, so that text can be transcribed into music.
+A web app as a tool for exploring a musical cryptogram: a composition system that maps each sound of a language to a specific musical pitch and duration, so that text can be transcribed into music. This serialized compositional approach creates a unique way to visualize and hear the relationship between language and music. It can be adhered to strictly for study, loosely as a creative exercise, or used as a starting point for further evolution.
 
-The current alphabet is the **French phoneme inventory** — 37 sounds (vowels, semivowels, nasal vowels, plosives, nasal consonants, fricatives, and liquids), each paired with a note and rhythm from the composition *FLUTE – PHONETIQUE*. Every sound gets its own page showing:
+This current iteration is an index of **French phonemes** — 37 sounds (vowels, semivowels, nasal vowels, plosives, nasal consonants, fricatives, and liquids), each paired with a note and rhythm. Every sound gets its own page showing:
 
 - The phoneme symbol (IPA), with an example French word
-- Its note rendered in standard music notation — including accidentals, dots, ties, and grace-note articulations from the original score
+- Its note rendered in standard music notation — including accidentals, dots, ties, and grace-note articulations
 - A play button that sounds the note with its exact notated duration
 - Previous/next navigation through the full set
 
@@ -38,13 +38,13 @@ The unit set is intentionally generic. Routing (`/unit/[slug]`), components, and
 
 ## Tech stack
 
-| Layer | Tool |
-| --- | --- |
-| Framework | [SvelteKit](https://svelte.dev/docs/kit) with [Svelte 5](https://svelte.dev) (runes) |
-| Language | TypeScript |
-| Audio | [Tone.js](https://tonejs.github.io) — synth playback with precise, explicit note durations |
-| Notation | [VexFlow](https://www.vexflow.com) — SVG music engraving |
-| Package manager | pnpm |
+| Layer           | Tool                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| Framework       | [SvelteKit](https://svelte.dev/docs/kit) with [Svelte 5](https://svelte.dev) (runes)       |
+| Language        | TypeScript                                                                                 |
+| Audio           | [Tone.js](https://tonejs.github.io) — synth playback with precise, explicit note durations |
+| Notation        | [VexFlow](https://www.vexflow.com) — SVG music engraving                                   |
+| Package manager | pnpm                                                                                       |
 
 ## Project structure
 
