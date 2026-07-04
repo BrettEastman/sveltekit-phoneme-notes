@@ -16,6 +16,8 @@
   --font-heading: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
   --font-display: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  /* IPA symbols need correct combining-mark placement (e.g. nasal tildes) */
+  --font-phonetic: "Noto Sans", "Arial", sans-serif;
 
   --text-xs: 0.8rem;
   --text-sm: 0.875rem;

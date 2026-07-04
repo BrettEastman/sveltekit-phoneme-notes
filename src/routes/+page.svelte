@@ -73,6 +73,7 @@
   }
 
   .tile-symbol {
+    font-family: var(--font-phonetic);
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--color-ink);

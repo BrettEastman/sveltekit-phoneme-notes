@@ -51,17 +51,17 @@
     </div>
 
     <button class="play-button" class:playing onclick={handlePlay}>
-      Play {unit.symbol}
+      Play <span class="symbol-inline">{unit.symbol}</span>
     </button>
   </div>
 
   <div class="pager">
     <a class="pager-link" href="/unit/{prevUnit.slug}">
-      ← {prevUnit.symbol}
+      ← <span class="symbol-inline">{prevUnit.symbol}</span>
     </a>
     <a class="pager-link index-link" href="/">All sounds</a>
     <a class="pager-link" href="/unit/{nextUnit.slug}">
-      {nextUnit.symbol} →
+      <span class="symbol-inline">{nextUnit.symbol}</span> →
     </a>
   </div>
 </div>
@@ -90,8 +90,12 @@
     margin: 0;
   }
 
+  .symbol-inline {
+    font-family: var(--font-phonetic);
+  }
+
   .symbol {
-    font-family: var(--font-body);
+    font-family: var(--font-phonetic);
     font-size: 6rem;
     line-height: 1.1;
     font-weight: 600;
