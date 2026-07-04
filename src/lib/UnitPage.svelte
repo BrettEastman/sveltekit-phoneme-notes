@@ -51,17 +51,17 @@
     </div>
 
     <button class="play-button" class:playing onclick={handlePlay}>
-      Play {unit.symbol}
+      Play <span class="symbol-inline">{unit.symbol}</span>
     </button>
   </div>
 
   <div class="pager">
     <a class="pager-link" href="/unit/{prevUnit.slug}">
-      ← {prevUnit.symbol}
+      ← <span class="symbol-inline">{prevUnit.symbol}</span>
     </a>
     <a class="pager-link index-link" href="/">All sounds</a>
     <a class="pager-link" href="/unit/{nextUnit.slug}">
-      {nextUnit.symbol} →
+      <span class="symbol-inline">{nextUnit.symbol}</span> →
     </a>
   </div>
 </div>
@@ -74,32 +74,38 @@
   }
 
   .unit-card {
-    background-color: #ffffff;
-    border-radius: 12px;
+    background-color: var(--color-paper-strong);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-lg);
     padding: 32px 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-soft);
     text-align: center;
   }
 
   .category {
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-size: 0.8rem;
-    color: #86868b;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
     margin: 0;
   }
 
+  .symbol-inline {
+    font-family: var(--font-phonetic);
+  }
+
   .symbol {
+    font-family: var(--font-phonetic);
     font-size: 6rem;
     line-height: 1.1;
     font-weight: 600;
-    color: #1d1d1f;
+    color: var(--color-ink);
     margin: 8px 0 0;
   }
 
   .example {
-    color: #6e6e73;
-    font-size: 1.05rem;
+    color: var(--color-muted);
+    font-size: var(--text-md);
     margin: 4px 0 24px;
     font-style: italic;
   }
@@ -109,8 +115,8 @@
   }
 
   .unit-info {
-    color: #6e6e73;
-    font-size: 1.05rem;
+    color: var(--color-muted);
+    font-size: var(--text-md);
     margin-bottom: 8px;
   }
 
@@ -119,24 +125,24 @@
   }
 
   .info-label {
-    color: #86868b;
+    color: var(--color-muted);
   }
 
   .play-button {
-    background-color: #007aff;
-    color: white;
-    padding: 12px 32px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 500;
-    font-size: 1.1rem;
+    background-color: var(--color-ink);
+    color: #fff;
+    padding: 0.55rem 1.5rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-ink);
+    font-weight: 600;
+    font-size: var(--text-md);
     transition: all 0.2s ease;
     margin-top: 16px;
     cursor: pointer;
   }
 
   .play-button:hover {
-    background-color: #0062cc;
+    background-color: #3a3a37;
     transform: translateY(-1px);
   }
 
@@ -145,19 +151,20 @@
   }
 
   .play-button.playing {
-    background-color: #0051a8;
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
     animation: pulse 0.5s ease-out;
   }
 
   @keyframes pulse {
     0% {
-      box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.6);
+      box-shadow: 0 0 0 0 rgba(47, 95, 151, 0.5);
     }
     70% {
-      box-shadow: 0 0 0 10px rgba(0, 122, 255, 0);
+      box-shadow: 0 0 0 10px rgba(47, 95, 151, 0);
     }
     100% {
-      box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+      box-shadow: 0 0 0 0 rgba(47, 95, 151, 0);
     }
   }
 
@@ -166,25 +173,29 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 24px;
+    background: var(--color-paper-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1rem;
   }
 
   .pager-link {
-    color: #007aff;
+    color: var(--color-accent);
     text-decoration: none;
-    font-weight: 500;
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: var(--text-md);
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     transition: background-color 0.2s ease;
   }
 
   .pager-link:hover {
-    background-color: #e5e5ea;
+    background-color: var(--color-border-soft);
   }
 
   .index-link {
     font-size: 0.95rem;
-    color: #6e6e73;
+    color: var(--color-muted);
   }
 
   @media (max-width: 600px) {
