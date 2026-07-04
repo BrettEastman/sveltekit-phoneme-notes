@@ -58,11 +58,10 @@ src/
 │   ├── audio.ts            # Shared Tone.js synth, playUnit / playNote
 │   ├── UnitNotation.svelte # VexFlow renderer for one unit (ties, dots, graces)
 │   ├── UnitPage.svelte     # Full unit page: symbol, notation, play, prev/next
-│   └── ...                 # Nav + original scale-demo components
+│   └── Header.svelte       # Site header
 └── routes/
     ├── +page.svelte        # Index of all sounds, grouped by category
-    ├── unit/[slug]/        # One page per sound, driven by units.ts
-    └── scale/              # The original proof-of-concept scale player
+    └── unit/[slug]/        # One page per sound, driven by units.ts
 ```
 
 ## Developing

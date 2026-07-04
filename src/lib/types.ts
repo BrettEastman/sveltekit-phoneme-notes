@@ -1,12 +1,3 @@
-export interface Note {
-  name: string;
-  frequency: number;
-  octave: number;
-  fullName: string;
-}
-
-export type NoteKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
-
 // --- Cryptogram unit types ---
 // A "unit" is one symbol in the cryptogram alphabet. Today the set is the
 // French phoneme inventory; a letter set (or any other symbol set) can be

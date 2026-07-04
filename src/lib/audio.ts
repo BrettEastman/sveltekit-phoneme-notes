@@ -29,16 +29,6 @@ export const initAudio = async (): Promise<void> => {
   }
 };
 
-export const playNote = (noteName: string, duration: string = '8n'): void => {
-  if (!synth) {
-    console.error('Synth not initialized. Call initAudio() first.');
-    return;
-  }
-
-  // Play the note with the given duration
-  synth.triggerAttackRelease(noteName, duration);
-};
-
 // Play a cryptogram unit with its exact notated duration. Initializes the
 // audio context on first call — safe because this always runs from a user
 // gesture (button click).
