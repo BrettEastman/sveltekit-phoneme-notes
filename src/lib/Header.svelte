@@ -4,8 +4,8 @@
 
 <style>
   header {
-    background-color: #ffffff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    background-color: var(--color-paper-strong);
+    border-bottom: 1px solid var(--color-border-soft);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -14,18 +14,18 @@
   }
 
   .title {
-    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1.4rem;
+    font-size: var(--text-xl);
     text-transform: uppercase;
     letter-spacing: 0.35em;
-    color: #1d1d1f;
+    color: var(--color-ink);
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   .title:hover {
-    color: #007aff;
+    color: var(--color-accent);
   }
 
   @media (max-width: 768px) {

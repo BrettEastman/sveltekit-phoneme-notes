@@ -52,7 +52,6 @@
       if (dotted) {
         Dot.buildAndAttach([staveNote], { all: true });
       }
-      staveNote.setStyle({ fillStyle: "#007AFF", strokeStyle: "#007AFF" });
       return staveNote;
     });
 
@@ -102,8 +101,8 @@
     width: 100%;
     overflow-x: auto;
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     min-height: 120px;
     display: flex;
     align-items: center;

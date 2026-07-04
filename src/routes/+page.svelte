@@ -28,8 +28,8 @@
   }
 
   header p {
-    font-size: 1.125rem;
-    color: #6e6e73;
+    font-size: var(--text-lg);
+    color: var(--color-muted);
     margin-top: 8px;
   }
 
@@ -38,12 +38,12 @@
   }
 
   h2 {
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #86868b;
+    font-size: 1.35rem;
+    color: var(--color-ink);
     font-weight: 600;
     margin: 0 0 12px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 6px;
   }
 
   .unit-grid {
@@ -58,29 +58,29 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background-color: #ffffff;
-    border: 2px solid #d1d1d6;
-    border-radius: 12px;
+    background-color: var(--color-paper-strong);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     padding: 16px 8px;
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
   .unit-tile:hover {
-    border-color: #007aff;
+    border-color: var(--color-accent);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-soft);
   }
 
   .tile-symbol {
     font-size: 1.75rem;
     font-weight: 600;
-    color: #1d1d1f;
+    color: var(--color-ink);
   }
 
   .tile-note {
-    font-size: 0.8rem;
-    color: #6e6e73;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
     white-space: nowrap;
   }
 
