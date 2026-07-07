@@ -1,8 +1,8 @@
 // Rule-based French grapheme-to-phoneme conversion. Turns a single written
 // word into a sequence of cryptogram units (see data/units.ts). The rules are
-// deliberately approximate: French spelling is regular enough that ~40 ordered
-// rules plus a small exception list read most words correctly, and occasional
-// misses are acceptable in a playful feature.
+// deliberately approximate: French spelling is regular enough that an ordered
+// list of context-sensitive rules plus a small exception list reads most words
+// correctly, and occasional misses are acceptable in a playful feature.
 
 import { units } from './data/units';
 import type { SoundUnit } from './types';
