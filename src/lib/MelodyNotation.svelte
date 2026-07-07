@@ -11,7 +11,7 @@
     StaveTie,
     Voice
   } from "vexflow";
-  import { beatsToNotation, parseNote } from "./music";
+  import { beatsToNotation, parseNote, type ParsedNote } from "./music";
   import type { SoundUnit } from "./types";
 
   interface Props {
@@ -33,6 +33,22 @@
     // Pairs of indexes into allNotes to tie (notes within one unit)
     const ties: Array<[number, number]> = [];
 
+    // Sharps and flats are always drawn (courtesy style — melodies here can
+    // run long without barlines). A natural is drawn only when it cancels a
+    // sharp/flat previously in force at the same staff position (letter +
+    // octave), e.g. A♭5 then A5.
+    const accidentalInForce = new Map<string, "#" | "b">();
+    const applyAccidental = (note: StaveNote, parsed: ParsedNote) => {
+      const position = `${parsed.letter}/${parsed.octave}`;
+      if (parsed.accidental) {
+        note.addModifier(new Accidental(parsed.accidental));
+        accidentalInForce.set(position, parsed.accidental);
+      } else if (accidentalInForce.has(position)) {
+        note.addModifier(new Accidental("n"));
+        accidentalInForce.delete(position);
+      }
+    };
+
     for (const unit of units) {
       const parsed = parseNote(unit.note);
       const firstIndex = allNotes.length;
@@ -42,9 +58,6 @@
           keys: [parsed.vexKey],
           duration: vexDuration
         });
-        if (i === 0 && parsed.accidental) {
-          staveNote.addModifier(new Accidental(parsed.accidental));
-        }
         if (dotted) {
           Dot.buildAndAttach([staveNote], { all: true });
         }
@@ -54,13 +67,24 @@
         allNotes.push(staveNote);
       });
 
+      // The grace note reads (and sounds) before the main note, so it takes
+      // part in the accidental bookkeeping first. When the ornament sits on
+      // the same pitch as its main note, the pair shares the grace's
+      // accidental, engraver style.
+      let accidentalCoveredByGrace = false;
       if (unit.grace) {
+        const parsedGrace = parseNote(unit.grace.note);
         const grace = new GraceNote({
-          keys: [parseNote(unit.grace.note).vexKey],
+          keys: [parsedGrace.vexKey],
           duration: "8",
           slash: true
         });
+        applyAccidental(grace, parsedGrace);
         allNotes[firstIndex].addModifier(new GraceNoteGroup([grace], true));
+        accidentalCoveredByGrace = parsedGrace.vexKey === parsed.vexKey;
+      }
+      if (!accidentalCoveredByGrace) {
+        applyAccidental(allNotes[firstIndex], parsed);
       }
     }
 

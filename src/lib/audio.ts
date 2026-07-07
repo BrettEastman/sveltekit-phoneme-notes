@@ -14,15 +14,43 @@ const isIOS = (): boolean =>
     // iPadOS reports as desktop Safari but has touch support
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
-// A one-sample silent WAV — just enough to keep the session in "playback"
-const SILENT_WAV =
-  'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+// Half a second of silence, built by hand (8kHz 8-bit mono PCM, ~4KB).
+// iOS ignores looping media that is effectively zero-length, so the file
+// needs real duration to hold the session in "playback".
+const createSilentWavUrl = (): string => {
+  const sampleRate = 8000;
+  const numSamples = sampleRate / 2;
+  const buffer = new ArrayBuffer(44 + numSamples);
+  const view = new DataView(buffer);
+  const writeString = (offset: number, text: string) => {
+    for (let i = 0; i < text.length; i++) {
+      view.setUint8(offset + i, text.charCodeAt(i));
+    }
+  };
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + numSamples, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true); // fmt chunk size
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate, true); // byte rate
+  view.setUint16(32, 1, true); // block align
+  view.setUint16(34, 8, true); // bits per sample
+  writeString(36, 'data');
+  view.setUint32(40, numSamples, true);
+  // 8-bit PCM silence sits at the unsigned midpoint
+  new Uint8Array(buffer, 44).fill(128);
+  return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+};
 
 const engagePlaybackSession = (): void => {
   if (!isIOS()) return;
   if (!unmuteElement) {
-    unmuteElement = new Audio(SILENT_WAV);
+    unmuteElement = new Audio(createSilentWavUrl());
     unmuteElement.loop = true;
+    unmuteElement.preload = 'auto';
   }
   // Rejection just means we stay in ambient mode — no worse than before
   unmuteElement.play().catch(() => {});
