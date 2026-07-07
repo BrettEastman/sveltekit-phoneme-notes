@@ -11,6 +11,10 @@ This current iteration is an index of **French phonemes** — 37 sounds (vowels,
 
 The home page is a browsable index of all sounds, grouped by phonetic category.
 
+### Word Melody
+
+The [`/melody`](src/routes/melody/+page.svelte) page turns any French word into music: type a word and a rule-based grapheme-to-phoneme engine ([`src/lib/phonemize.ts`](src/lib/phonemize.ts)) reads it into phonemes — no dictionary, no backend, so it works on any input, including invented words. The resulting melody is engraved on a staff (ties, dots, grace ornaments, and correct accidental/natural bookkeeping) and can be played back with its exact notated rhythm.
+
 ## How it works
 
 The entire app is driven by a single data file: [`src/lib/data/units.ts`](src/lib/data/units.ts). Each entry is a `SoundUnit`:
@@ -55,12 +59,18 @@ src/
 │   │   └── units.ts        # The cryptogram mapping — the app's single data source
 │   ├── types.ts            # SoundUnit and supporting types
 │   ├── music.ts            # Pitch parsing, beats → notation, duration labels
-│   ├── audio.ts            # Shared Tone.js synth, playUnit / playNote
+│   ├── audio.ts            # Shared Tone.js synth, playUnit / playMelody
+│   ├── phonemize.ts        # Rule-based French grapheme → phoneme engine
 │   ├── UnitNotation.svelte # VexFlow renderer for one unit (ties, dots, graces)
+│   ├── MelodyNotation.svelte # VexFlow renderer for phoneme sequences
 │   ├── UnitPage.svelte     # Full unit page: symbol, notation, play, prev/next
 │   └── Header.svelte       # Site header
+├── styles/
+│   ├── tokens.css          # Design system: colors, fonts, spacing, radii
+│   └── base.css            # Global resets and body/heading defaults
 └── routes/
     ├── +page.svelte        # Index of all sounds, grouped by category
+    ├── melody/             # Word Melody: type a word, hear it as music
     └── unit/[slug]/        # One page per sound, driven by units.ts
 ```
 
@@ -76,6 +86,7 @@ pnpm preview    # preview the production build
 
 ## Roadmap
 
-- Transcription: type a word or phrase and hear it played as a melody
+- ~~Transcription: type a word and hear it played as a melody~~ ✅ — see [Word Melody](#word-melody)
+- Phrase transcription: multi-word melodies with rests between words
 - Additional alphabets (A–Z letters, other phoneme sets)
 - X noteheads on percussive grace-note ornaments, matching the score
