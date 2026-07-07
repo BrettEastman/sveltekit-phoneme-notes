@@ -9,6 +9,7 @@
     language to a specific musical pitch and duration. This current iteration is
     an index of French phonemes (37 sounds) for transcribing French into music.
   </p>
+  <a class="melody-cta" href="/melody">Turn a word into a melody →</a>
 </header>
 
 {#each categoryOrder as category}
@@ -38,6 +39,25 @@
     font-size: var(--text-lg);
     color: var(--color-muted);
     margin-top: 8px;
+  }
+
+  .melody-cta {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 0.55rem 1.2rem;
+    background-color: var(--color-paper-strong);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-ink);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .melody-cta:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
   }
 
   section {
