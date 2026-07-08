@@ -1,10 +1,11 @@
 // Rule-based French grapheme-to-phoneme conversion. Turns a single written
-// word into a sequence of cryptogram units (see data/units.ts). The rules are
+// word into a sequence of cryptogram units (see data/alphabets/french.ts).
+// The rules are
 // deliberately approximate: French spelling is regular enough that an ordered
 // list of context-sensitive rules plus a small exception list reads most words
 // correctly, and occasional misses are acceptable in a playful feature.
 
-import { units } from './data/units';
+import { french } from './data/alphabets/french';
 import type { SoundUnit } from './types';
 
 export interface PhonemeMatch {
@@ -21,7 +22,7 @@ export interface PhonemizeResult {
   error: string | null;
 }
 
-const unitBySymbol = new Map(units.map((unit) => [unit.symbol, unit]));
+const unitBySymbol = new Map(french.units.map((unit) => [unit.symbol, unit]));
 
 const VOWEL_LETTERS = 'aàâäeéèêëiîïoôöuùûüyœ';
 const isVowelLetter = (ch: string | undefined): boolean =>

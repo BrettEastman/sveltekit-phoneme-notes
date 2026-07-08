@@ -26,6 +26,13 @@ export const parseNote = (note: string): ParsedNote => {
 export const prettyNoteName = (note: string): string =>
   note.replace('#', '♯').replace('b', '♭');
 
+// Diatonic staff position (each unit = one line-or-space step); used to
+// decide how much headroom a stave needs above the top line
+export const staffSteps = (note: string): number => {
+  const { letter, octave } = parseNote(note);
+  return octave * 7 + 'CDEFGAB'.indexOf(letter);
+};
+
 export interface NotatedDuration {
   // VexFlow duration code: 'w' | 'h' | 'q' | '8' | '16'
   vexDuration: string;

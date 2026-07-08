@@ -1,0 +1,69 @@
+import type { Alphabet, SoundUnit } from '../../types';
+
+// Normalized from "ALPHABETs - ALL.musicxml" (Sibelius export, divisions =
+// 256), section "Complete flute alphabet". Tied notes are collapsed into a
+// single total duration; grace notes are kept as ornaments. Punctuation rest
+// units follow the score's documented mapping (space → 16th rest, comma →
+// 8th, period → dotted 8th, semicolon → quarter, colon → dotted quarter,
+// paragraph break → half). The score's '?' figure and '!' chord need
+// multi-note units and are not represented yet.
+const units: SoundUnit[] = [
+  { slug: 'a', symbol: 'A', category: 'letter', note: 'A5', duration: '8n', beats: 0.5 },
+  { slug: 'b', symbol: 'B', category: 'letter', note: 'Bb5', duration: '4n', beats: 1 },
+  { slug: 'c', symbol: 'C', category: 'letter', note: 'C6', duration: '16n', beats: 0.25 },
+  { slug: 'd', symbol: 'D', category: 'letter', note: 'D6', duration: '8n', beats: 0.5 },
+  { slug: 'e', symbol: 'E', category: 'letter', note: 'E6', duration: '8n', beats: 0.5 },
+  { slug: 'f', symbol: 'F', category: 'letter', note: 'F6', duration: '8n', beats: 0.5, grace: { note: 'F6', notehead: 'normal' } },
+  { slug: 'g', symbol: 'G', category: 'letter', note: 'G6', duration: '8n', beats: 0.5 },
+  { slug: 'h', symbol: 'H', category: 'letter', note: 'B5', duration: '8n.', beats: 0.75 },
+  { slug: 'i', symbol: 'I', category: 'letter', note: 'F#6', duration: '16n', beats: 0.25 },
+  { slug: 'j', symbol: 'J', category: 'letter', note: 'F#5', duration: '16n', beats: 0.25, grace: { note: 'F#5', notehead: 'normal' } },
+  { slug: 'k', symbol: 'K', category: 'letter', note: 'C5', duration: '4n.', beats: 1.5, grace: { note: 'C5', notehead: 'normal' } },
+  { slug: 'l', symbol: 'L', category: 'letter', note: 'Ab5', duration: '8n', beats: 0.5 },
+  { slug: 'm', symbol: 'M', category: 'letter', note: 'Eb6', duration: '16n', beats: 0.25 },
+  { slug: 'n', symbol: 'N', category: 'letter', note: 'A4', duration: '4n.', beats: 1.5 },
+  { slug: 'o', symbol: 'O', category: 'letter', note: 'D5', duration: '2n + 8n.', beats: 2.75 },
+  { slug: 'p', symbol: 'P', category: 'letter', note: 'Bb6', duration: '8n', beats: 0.5, grace: { note: 'Bb6', notehead: 'normal' } },
+  { slug: 'q', symbol: 'Q', category: 'letter', note: 'C4', duration: '2n', beats: 2 },
+  { slug: 'r', symbol: 'R', category: 'letter', note: 'Ab4', duration: '4n.', beats: 1.5 },
+  { slug: 's', symbol: 'S', category: 'letter', note: 'C#7', duration: '16n', beats: 0.25, grace: { note: 'C#7', notehead: 'normal' } },
+  { slug: 't', symbol: 'T', category: 'letter', note: 'G5', duration: '2n', beats: 2, grace: { note: 'G5', notehead: 'normal' } },
+  { slug: 'u', symbol: 'U', category: 'letter', note: 'C5', duration: '2n + 8n', beats: 2.5 },
+  { slug: 'v', symbol: 'V', category: 'letter', note: 'B4', duration: '2n', beats: 2, grace: { note: 'B4', notehead: 'normal' } },
+  { slug: 'w', symbol: 'W', category: 'letter', note: 'B4', duration: '2n', beats: 2 },
+  { slug: 'x', symbol: 'X', category: 'letter', note: 'F4', duration: '2n', beats: 2 },
+  { slug: 'y', symbol: 'Y', category: 'letter', note: 'F#5', duration: '8n', beats: 0.5 },
+  { slug: 'z', symbol: 'Z', category: 'letter', note: 'C#4', duration: '4n.', beats: 1.5, grace: { note: 'C#4', notehead: 'normal' } },
+
+  { slug: 'dollar', symbol: '$', category: 'symbol', note: 'Eb5', duration: '8n', beats: 0.5, notehead: 'x' },
+  { slug: 'dash', symbol: '-', category: 'symbol', note: 'C6', duration: '16n', beats: 0.25, notehead: 'x' },
+  { slug: 'at', symbol: '@', category: 'symbol', note: 'A5', duration: '4n', beats: 1 },
+  { slug: 'slash', symbol: '/', category: 'symbol', note: 'Bb5', duration: '16n', beats: 0.25, notehead: 'x' },
+  { slug: 'paren-open', symbol: '(', category: 'symbol', note: 'Ab4', duration: '16n', beats: 0.25, notehead: 'x' },
+  { slug: 'paren-close', symbol: ')', category: 'symbol', note: 'Gb4', duration: '16n', beats: 0.25, notehead: 'x' },
+  { slug: 'apostrophe', symbol: "'", category: 'symbol', note: 'B4', duration: '16n', beats: 0.25 },
+  { slug: 'quote-open', symbol: '“', category: 'symbol', note: 'Ab4', duration: '8n', beats: 0.5, notehead: 'x' },
+  { slug: 'quote-close', symbol: '”', category: 'symbol', note: 'G4', duration: '8n', beats: 0.5, notehead: 'x' },
+
+  { slug: 'space', symbol: '␣', category: 'rest', rest: true, duration: '16n', beats: 0.25 },
+  { slug: 'comma', symbol: ',', category: 'rest', rest: true, duration: '8n', beats: 0.5 },
+  { slug: 'period', symbol: '.', category: 'rest', rest: true, duration: '8n.', beats: 0.75 },
+  { slug: 'semicolon', symbol: ';', category: 'rest', rest: true, duration: '4n', beats: 1 },
+  { slug: 'colon', symbol: ':', category: 'rest', rest: true, duration: '4n.', beats: 1.5 },
+  { slug: 'paragraph', symbol: '¶', category: 'rest', rest: true, duration: '2n', beats: 2 }
+];
+
+export const completeFlute: Alphabet = {
+  id: 'complete-flute',
+  name: 'Complete Flute',
+  description:
+    'An original A–Z alphabet for flute, plus symbols and punctuation — where punctuation becomes rests, so whole sentences can be transcribed, breaths and all.',
+  clef: 'treble',
+  kind: 'letter',
+  categories: [
+    { id: 'letter', label: 'Letters' },
+    { id: 'symbol', label: 'Symbols' },
+    { id: 'rest', label: 'Punctuation (rests)' }
+  ],
+  units
+};

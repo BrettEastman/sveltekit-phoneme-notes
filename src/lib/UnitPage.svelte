@@ -1,17 +1,22 @@
 <script lang="ts">
   import { playUnit } from "./audio";
-  import { categoryLabels } from "./data/units";
   import { durationLabel, prettyNoteName } from "./music";
   import UnitNotation from "./UnitNotation.svelte";
-  import type { SoundUnit } from "./types";
+  import type { Alphabet, SoundUnit } from "./types";
 
   interface Props {
+    alphabet: Alphabet;
     unit: SoundUnit;
     prevUnit: SoundUnit;
     nextUnit: SoundUnit;
   }
 
-  let { unit, prevUnit, nextUnit }: Props = $props();
+  let { alphabet, unit, prevUnit, nextUnit }: Props = $props();
+
+  const categoryLabel = $derived(
+    alphabet.categories.find((category) => category.id === unit.category)
+      ?.label ?? unit.category
+  );
 
   let playing = $state(false);
 
@@ -31,18 +36,20 @@
 
 <div class="unit-page">
   <div class="unit-card">
-    <p class="category">{categoryLabels[unit.category]}</p>
+    <p class="category">{categoryLabel}</p>
     <h2 class="symbol">{unit.symbol}</h2>
-    <p class="example">as in «&nbsp;{unit.example}&nbsp;»</p>
+    {#if unit.example}
+      <p class="example">as in «&nbsp;{unit.example}&nbsp;»</p>
+    {/if}
 
     <div class="notation-wrapper">
-      <UnitNotation {unit} />
+      <UnitNotation {unit} clef={unit.clef ?? alphabet.clef} />
     </div>
 
     <div class="unit-info">
       <p>
-        <span class="info-label">Note:</span>
-        {prettyNoteName(unit.note)}
+        <span class="info-label">{unit.rest ? "Rest" : "Note:"}</span>
+        {#if !unit.rest}{prettyNoteName(unit.note ?? "")}{/if}
       </p>
       <p>
         <span class="info-label">Duration:</span>
@@ -56,11 +63,11 @@
   </div>
 
   <div class="pager">
-    <a class="pager-link" href="/unit/{prevUnit.slug}">
+    <a class="pager-link" href="/{alphabet.id}/unit/{prevUnit.slug}">
       ← <span class="symbol-inline">{prevUnit.symbol}</span>
     </a>
-    <a class="pager-link index-link" href="/">All sounds</a>
-    <a class="pager-link" href="/unit/{nextUnit.slug}">
+    <a class="pager-link index-link" href="/{alphabet.id}">All symbols</a>
+    <a class="pager-link" href="/{alphabet.id}/unit/{nextUnit.slug}">
       <span class="symbol-inline">{nextUnit.symbol}</span> →
     </a>
   </div>
