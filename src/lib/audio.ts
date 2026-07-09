@@ -97,6 +97,8 @@ export const initAudio = async (): Promise<void> => {
 // gesture (button click).
 export const playUnit = async (unit: SoundUnit): Promise<void> => {
   await initAudio();
+  // Rest units "play" as silence — the button still holds for the duration
+  if (unit.rest || !unit.note) return;
   synth?.triggerAttackRelease(unit.note, beatsToSeconds(unit.beats));
 };
 
@@ -110,11 +112,14 @@ export const playMelody = async (units: SoundUnit[]): Promise<number> => {
   let offset = 0;
   for (const unit of units) {
     const duration = beatsToSeconds(unit.beats);
-    synth?.triggerAttackRelease(
-      unit.note,
-      Math.max(duration - 0.06, 0.05),
-      start + offset
-    );
+    // Rest units advance time without sounding
+    if (!unit.rest && unit.note) {
+      synth?.triggerAttackRelease(
+        unit.note,
+        Math.max(duration - 0.06, 0.05),
+        start + offset
+      );
+    }
     offset += duration;
   }
   return offset;

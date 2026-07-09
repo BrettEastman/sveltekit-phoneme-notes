@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     Accidental,
+    ClefNote,
     Dot,
     Formatter,
     GraceNote,
@@ -9,19 +10,34 @@
     Stave,
     StaveNote,
     StaveTie,
-    Voice
+    Voice,
+    type Note
   } from "vexflow";
-  import { beatsToNotation, parseNote, type ParsedNote } from "./music";
-  import type { SoundUnit } from "./types";
+  import { beatsToNotation, parseNote, staffSteps, type ParsedNote } from "./music";
+  import type { Clef, SoundUnit } from "./types";
 
   interface Props {
     units: SoundUnit[];
+    clef?: Clef;
     height?: number;
   }
 
-  let { units, height = 220 }: Props = $props();
+  let { units, clef = "treble", height = 220 }: Props = $props();
 
   let container: HTMLDivElement | undefined = $state();
+
+  // Rests sit on the middle line of whichever clef is active
+  const REST_KEY: Record<Clef, string> = { treble: "b/4", bass: "d/3" };
+
+  // Notes above A6 (with their stems and grace ornaments) need a taller
+  // headroom above the stave than the default
+  const A6_STEPS = staffSteps("A6");
+  const needsHighHeadroom = (melody: SoundUnit[]): boolean =>
+    melody.some(
+      (u) =>
+        (u.note && staffSteps(u.note) > A6_STEPS) ||
+        (u.grace && staffSteps(u.grace.note) > A6_STEPS)
+    );
 
   const renderNotation = () => {
     if (!container) return;
@@ -29,8 +45,8 @@
     container.innerHTML = "";
     if (units.length === 0) return;
 
-    const allNotes: StaveNote[] = [];
-    // Pairs of indexes into allNotes to tie (notes within one unit)
+    const tickables: Note[] = [];
+    // Pairs of indexes into tickables to tie (notes within one unit)
     const ties: Array<[number, number]> = [];
 
     // Sharps and flats are always drawn (courtesy style — melodies here can
@@ -49,22 +65,50 @@
       }
     };
 
+    let currentClef: Clef = clef;
+
     for (const unit of units) {
+      if (unit.rest || !unit.note) {
+        // Rests inherit whatever clef is in force
+        beatsToNotation(unit.beats).forEach(({ vexDuration, dotted }) => {
+          const restNote = new StaveNote({
+            keys: [REST_KEY[currentClef]],
+            duration: `${vexDuration}r`,
+            clef: currentClef
+          });
+          if (dotted) {
+            Dot.buildAndAttach([restNote], { all: true });
+          }
+          tickables.push(restNote);
+        });
+        continue;
+      }
+
+      // Mid-staff clef change when a unit lives in the other register
+      // (e.g. Messiaen's bass-clef letters)
+      const unitClef = unit.clef ?? clef;
+      if (unitClef !== currentClef) {
+        tickables.push(new ClefNote(unitClef, "small"));
+        currentClef = unitClef;
+      }
+
       const parsed = parseNote(unit.note);
-      const firstIndex = allNotes.length;
+      const unitNotes: StaveNote[] = [];
 
       beatsToNotation(unit.beats).forEach(({ vexDuration, dotted }, i) => {
         const staveNote = new StaveNote({
           keys: [parsed.vexKey],
-          duration: vexDuration
+          duration: vexDuration,
+          clef: currentClef
         });
         if (dotted) {
           Dot.buildAndAttach([staveNote], { all: true });
         }
         if (i > 0) {
-          ties.push([allNotes.length - 1, allNotes.length]);
+          ties.push([tickables.length - 1, tickables.length]);
         }
-        allNotes.push(staveNote);
+        tickables.push(staveNote);
+        unitNotes.push(staveNote);
       });
 
       // The grace note reads (and sounds) before the main note, so it takes
@@ -77,40 +121,42 @@
         const grace = new GraceNote({
           keys: [parsedGrace.vexKey],
           duration: "8",
-          slash: true
+          slash: true,
+          clef: currentClef
         });
         applyAccidental(grace, parsedGrace);
-        allNotes[firstIndex].addModifier(new GraceNoteGroup([grace], true));
+        unitNotes[0].addModifier(new GraceNoteGroup([grace], true));
         accidentalCoveredByGrace = parsedGrace.vexKey === parsed.vexKey;
       }
       if (!accidentalCoveredByGrace) {
-        applyAccidental(allNotes[firstIndex], parsed);
+        applyAccidental(unitNotes[0], parsed);
       }
     }
 
     // Scale the stave with the melody length; the container scrolls
-    const width = Math.max(360, 120 + allNotes.length * 70);
+    const width = Math.max(360, 120 + tickables.length * 70);
+    // Default headroom fits ledger lines up to A6; extreme notes get more
+    const staveY = needsHighHeadroom(units) ? 150 : 70;
 
     const renderer = new Renderer(container, Renderer.Backends.SVG);
-    renderer.resize(width, height);
+    renderer.resize(width, height + (staveY - 70));
     const context = renderer.getContext();
     context.setFont("Arial", 10);
 
-    // Leave headroom above the stave for ledger-line notes up to A6
-    const stave = new Stave(10, 70, width - 20);
-    stave.addClef("treble").setContext(context).draw();
+    const stave = new Stave(10, staveY, width - 20);
+    stave.addClef(clef).setContext(context).draw();
 
     const voice = new Voice({ numBeats: 4, beatValue: 4 });
     voice.setStrict(false);
-    voice.addTickables(allNotes);
+    voice.addTickables(tickables);
 
     new Formatter().joinVoices([voice]).format([voice], width - 90);
     voice.draw(context, stave);
 
     for (const [from, to] of ties) {
       new StaveTie({
-        firstNote: allNotes[from],
-        lastNote: allNotes[to],
+        firstNote: tickables[from],
+        lastNote: tickables[to],
         firstIndexes: [0],
         lastIndexes: [0]
       })
@@ -121,7 +167,7 @@
 
   $effect(() => {
     // Explicitly list dependencies to watch
-    const _ = [units, height, container];
+    const _ = [units, clef, height, container];
 
     if (container) {
       renderNotation();

@@ -1,17 +1,29 @@
 <script lang="ts">
   import { playMelody } from "$lib/audio";
   import MelodyNotation from "$lib/MelodyNotation.svelte";
-  import { phonemize } from "$lib/phonemize";
+  import { tokenize } from "$lib/tokenize";
   import type { SoundUnit } from "$lib/types";
+  import type { PageProps } from "./$types";
+
+  let { data }: PageProps = $props();
 
   let word = $state("");
   let playing = $state(false);
 
-  const result = $derived(phonemize(word));
+  const alphabet = $derived(data.alphabet);
+  const result = $derived(tokenize(alphabet, word));
   const melodyUnits = $derived(
     result.matches
       .map((match) => match.unit)
       .filter((unit): unit is SoundUnit => unit !== null)
+  );
+
+  const emptyHint = $derived(
+    alphabet.kind === "phoneme"
+      ? "One French word, letters only. Accents welcome."
+      : alphabet.units.some((unit) => unit.slug === "space")
+        ? "Words, phrases, punctuation — spaces and punctuation become rests."
+        : "Any word — letters A to Z."
   );
 
   const handlePlay = async () => {
@@ -30,15 +42,16 @@
 </script>
 
 <svelte:head>
-  <title>Word Melody — Cryptogram Phonétique</title>
+  <title>Word Melody — {alphabet.name}</title>
 </svelte:head>
 
 <div class="melody-page">
   <header>
     <h1>Word Melody</h1>
     <p>
-      Type a French word and hear it as a melody — each sound becomes its note
-      from the cryptogram.
+      Type something and hear it as a melody — each
+      {alphabet.kind === "phoneme" ? "sound" : "character"} becomes its note
+      from the {alphabet.name} alphabet.
     </p>
   </header>
 
@@ -52,12 +65,12 @@
     >
       <input
         type="text"
-        placeholder="bonjour"
-        maxlength="24"
+        placeholder={alphabet.kind === "phoneme" ? "bonjour" : "la musique"}
+        maxlength={alphabet.kind === "phoneme" ? 24 : 80}
         autocomplete="off"
         autocapitalize="none"
         spellcheck="false"
-        aria-label="French word"
+        aria-label="Text to play"
         bind:value={word}
       />
       <button
@@ -73,26 +86,28 @@
     {#if result.error}
       <p class="hint error">{result.error}</p>
     {:else if melodyUnits.length > 0}
-      <p class="readout" aria-label="Phonemes">
+      <p class="readout" aria-label="Units">
         {#each melodyUnits as unit, i (i)}
-          <a class="phoneme" href="/unit/{unit.slug}">{unit.symbol}</a>
+          <a class="phoneme" href="/{alphabet.id}/unit/{unit.slug}">{unit.symbol}</a>
         {/each}
       </p>
 
       <div class="notation-wrapper">
-        <MelodyNotation units={melodyUnits} />
+        <MelodyNotation units={melodyUnits} clef={alphabet.clef} />
       </div>
 
-      <p class="hint">
-        Read by simple spelling rules — some words won't be perfect.
-      </p>
+      {#if alphabet.kind === "phoneme"}
+        <p class="hint">
+          Read by simple spelling rules — some words won't be perfect.
+        </p>
+      {/if}
     {:else}
-      <p class="hint">One French word, letters only. Accents welcome.</p>
+      <p class="hint">{emptyHint}</p>
     {/if}
   </div>
 
   <div class="pager">
-    <a class="pager-link" href="/">← All sounds</a>
+    <a class="pager-link" href="/{alphabet.id}">← All of {alphabet.name}</a>
   </div>
 </div>
 

@@ -1,11 +1,11 @@
-import type { SoundUnit, UnitCategory } from '../types';
+import type { Alphabet, SoundUnit } from '../../types';
 
 // Normalized from "FLUTE - Phonétique mastersheet 220528.musicxml"
 // (Sibelius export, divisions = 256 per quarter note). Tied notes in the
 // score are collapsed into a single total duration; grace notes in the score
 // are kept as `grace` ornaments. `beats` is the source of truth for both
 // playback and notation; `duration` is the equivalent Tone.js notation.
-export const units: SoundUnit[] = [
+const units: SoundUnit[] = [
   // Measure 1 — vowels
   { slug: 'a', symbol: 'a', example: 'patte', category: 'vowel', note: 'A5', duration: '8n', beats: 0.5 },
   { slug: 'ah', symbol: 'ɑ', example: 'pâte', category: 'vowel', note: 'Bb5', duration: '4n', beats: 1 },
@@ -58,28 +58,21 @@ export const units: SoundUnit[] = [
   { slug: 'r', symbol: 'ʁ', example: 'rue', category: 'liquid', note: 'Ab5', duration: '2n', beats: 2 }
 ];
 
-export const categoryLabels: Record<UnitCategory, string> = {
-  vowel: 'Vowels',
-  semivowel: 'Semivowels',
-  'nasal-vowel': 'Nasal vowels',
-  plosive: 'Plosives',
-  'nasal-consonant': 'Nasal consonants',
-  fricative: 'Fricatives',
-  liquid: 'Liquids'
+export const french: Alphabet = {
+  id: 'french',
+  name: 'French Phonemes',
+  description:
+    'The 37 sounds of French — vowels, semivowels, nasals, plosives, fricatives, and liquids — each with its own note and rhythm. Words are read by spelling rules, so any French word becomes a melody.',
+  clef: 'treble',
+  kind: 'phoneme',
+  categories: [
+    { id: 'vowel', label: 'Vowels' },
+    { id: 'semivowel', label: 'Semivowels' },
+    { id: 'nasal-vowel', label: 'Nasal vowels' },
+    { id: 'plosive', label: 'Plosives' },
+    { id: 'nasal-consonant', label: 'Nasal consonants' },
+    { id: 'fricative', label: 'Fricatives' },
+    { id: 'liquid', label: 'Liquids' }
+  ],
+  units
 };
-
-export const categoryOrder: UnitCategory[] = [
-  'vowel',
-  'semivowel',
-  'nasal-vowel',
-  'plosive',
-  'nasal-consonant',
-  'fricative',
-  'liquid'
-];
-
-export const getUnitIndex = (slug: string): number =>
-  units.findIndex((unit) => unit.slug === slug);
-
-export const getUnit = (slug: string): SoundUnit | undefined =>
-  units[getUnitIndex(slug)];
