@@ -59,7 +59,8 @@
       notes = beatsToNotation(unit.beats).map(({ vexDuration, dotted }) => {
         const restNote = new StaveNote({
           keys: [REST_KEY[clef]],
-          duration: `${vexDuration}r`
+          duration: `${vexDuration}r`,
+          clef
         });
         if (dotted) {
           Dot.buildAndAttach([restNote], { all: true });
