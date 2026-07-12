@@ -1,6 +1,7 @@
 <script lang="ts">
   import { playMelody } from "$lib/audio";
   import MelodyNotation from "$lib/MelodyNotation.svelte";
+  import OutputSelector from "$lib/OutputSelector.svelte";
   import { tokenize } from "$lib/tokenize";
   import type { SoundUnit } from "$lib/types";
   import type { PageProps } from "./$types";
@@ -82,6 +83,8 @@
         Play
       </button>
     </form>
+
+    <OutputSelector />
 
     {#if result.error}
       <p class="hint error">{result.error}</p>

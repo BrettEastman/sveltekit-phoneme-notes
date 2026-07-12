@@ -1,5 +1,10 @@
 import * as Tone from 'tone';
+import { getOutput, initMidi, playMelodyMidi } from './midi';
+import { beatsToSeconds } from './music';
+import { outputState, SYNTH_OUTPUT } from './output.svelte';
 import type { SoundUnit } from './types';
+
+export { BPM, beatsToSeconds } from './music';
 
 let synth: Tone.Synth | null = null;
 let unmuteElement: HTMLAudioElement | null = null;
@@ -56,11 +61,18 @@ const engagePlaybackSession = (): void => {
   unmuteElement.play().catch(() => {});
 };
 
-// Tempo used to realize notated durations. At 60 BPM a quarter note ('4n')
-// lasts exactly one second.
-export const BPM = 60;
-
-export const beatsToSeconds = (beats: number): number => beats * (60 / BPM);
+// When a MIDI port is selected (and still connected), playback bypasses the
+// synth entirely. Re-acquiring access here is cheap: the browser remembers
+// the grant, so this resolves silently after the first approval.
+const resolveMidiOutput = async (): Promise<MIDIOutput | null> => {
+  if (outputState.selectedId === SYNTH_OUTPUT) return null;
+  try {
+    await initMidi();
+    return getOutput(outputState.selectedId);
+  } catch {
+    return null;
+  }
+};
 
 export const initAudio = async (): Promise<void> => {
   // Runs inside the click's gesture context, which iOS requires
@@ -96,6 +108,11 @@ export const initAudio = async (): Promise<void> => {
 // audio context on first call — safe because this always runs from a user
 // gesture (button click).
 export const playUnit = async (unit: SoundUnit): Promise<void> => {
+  const midiOutput = await resolveMidiOutput();
+  if (midiOutput) {
+    playMelodyMidi(midiOutput, [unit]);
+    return;
+  }
   await initAudio();
   // Rest units "play" as silence — the button still holds for the duration
   if (unit.rest || !unit.note) return;
@@ -106,6 +123,10 @@ export const playUnit = async (unit: SoundUnit): Promise<void> => {
 // in seconds so callers can time UI state. Notes are shortened slightly so
 // the monophonic synth articulates repeated pitches instead of slurring them.
 export const playMelody = async (units: SoundUnit[]): Promise<number> => {
+  const midiOutput = await resolveMidiOutput();
+  if (midiOutput) {
+    return playMelodyMidi(midiOutput, units);
+  }
   await initAudio();
 
   const start = Tone.now() + 0.05;

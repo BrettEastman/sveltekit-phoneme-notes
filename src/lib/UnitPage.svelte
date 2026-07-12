@@ -1,6 +1,7 @@
 <script lang="ts">
   import { playUnit } from "./audio";
   import { durationLabel, prettyNoteName } from "./music";
+  import OutputSelector from "./OutputSelector.svelte";
   import UnitNotation from "./UnitNotation.svelte";
   import type { Alphabet, SoundUnit } from "./types";
 
@@ -60,6 +61,8 @@
     <button class="play-button" class:playing onclick={handlePlay}>
       Play <span class="symbol-inline">{unit.symbol}</span>
     </button>
+
+    <OutputSelector />
   </div>
 
   <div class="pager">

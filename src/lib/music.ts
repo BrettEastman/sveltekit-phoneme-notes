@@ -26,6 +26,12 @@ export const parseNote = (note: string): ParsedNote => {
 export const prettyNoteName = (note: string): string =>
   note.replace('#', '♯').replace('b', '♭');
 
+// Tempo used to realize notated durations. At 60 BPM a quarter note ('4n')
+// lasts exactly one second.
+export const BPM = 60;
+
+export const beatsToSeconds = (beats: number): number => beats * (60 / BPM);
+
 // Diatonic staff position (each unit = one line-or-space step); used to
 // decide how much headroom a stave needs above the top line
 export const staffSteps = (note: string): number => {
