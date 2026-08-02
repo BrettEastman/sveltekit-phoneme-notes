@@ -1,13 +1,3 @@
-packages:
-  - "."
-
-# pnpm 10 (used by Cloudflare Workers Builds)
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - workerd
-
-# pnpm 11 (local)
 allowBuilds:
   esbuild: true
   sharp: true
