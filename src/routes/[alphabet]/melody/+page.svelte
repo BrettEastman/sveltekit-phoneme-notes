@@ -125,13 +125,7 @@
     margin-bottom: 24px;
   }
 
-  header h1 {
-    font-size: 2rem;
-    margin: 0 0 4px;
-    color: var(--color-ink);
-  }
-
-  header p {
+  header h3 {
     color: var(--color-muted);
     font-size: var(--text-md);
     margin: 0;
