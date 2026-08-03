@@ -6,7 +6,7 @@
     outputState,
     restoreMidiIfGranted,
     selectOutput,
-    SYNTH_OUTPUT
+    SYNTH_OUTPUT,
   } from "./output.svelte";
 
   let enabling = $state(false);

@@ -1,10 +1,10 @@
-import * as Tone from 'tone';
-import { getOutput, initMidi, playMelodyMidi } from './midi';
-import { beatsToSeconds } from './music';
-import { outputState, SYNTH_OUTPUT } from './output.svelte';
-import type { SoundUnit } from './types';
+import * as Tone from "tone";
+import { getOutput, initMidi, playMelodyMidi } from "./midi";
+import { beatsToSeconds } from "./music";
+import { outputState, SYNTH_OUTPUT } from "./output.svelte";
+import type { SoundUnit } from "./types";
 
-export { BPM, beatsToSeconds } from './music';
+export { BPM, beatsToSeconds } from "./music";
 
 let synth: Tone.Synth | null = null;
 let unmuteElement: HTMLAudioElement | null = null;
@@ -14,10 +14,10 @@ let unmuteElement: HTMLAudioElement | null = null;
 // the session to "playback", which ignores the switch — the standard
 // workaround used by web games. Only needed (and only run) on iOS.
 const isIOS = (): boolean =>
-  typeof navigator !== 'undefined' &&
+  typeof navigator !== "undefined" &&
   (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
     // iPadOS reports as desktop Safari but has touch support
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
 
 // Half a second of silence, built by hand (8kHz 8-bit mono PCM, ~4KB).
 // iOS ignores looping media that is effectively zero-length, so the file
@@ -32,10 +32,10 @@ const createSilentWavUrl = (): string => {
       view.setUint8(offset + i, text.charCodeAt(i));
     }
   };
-  writeString(0, 'RIFF');
+  writeString(0, "RIFF");
   view.setUint32(4, 36 + numSamples, true);
-  writeString(8, 'WAVE');
-  writeString(12, 'fmt ');
+  writeString(8, "WAVE");
+  writeString(12, "fmt ");
   view.setUint32(16, 16, true); // fmt chunk size
   view.setUint16(20, 1, true); // PCM
   view.setUint16(22, 1, true); // mono
@@ -43,11 +43,11 @@ const createSilentWavUrl = (): string => {
   view.setUint32(28, sampleRate, true); // byte rate
   view.setUint16(32, 1, true); // block align
   view.setUint16(34, 8, true); // bits per sample
-  writeString(36, 'data');
+  writeString(36, "data");
   view.setUint32(40, numSamples, true);
   // 8-bit PCM silence sits at the unsigned midpoint
   new Uint8Array(buffer, 44).fill(128);
-  return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+  return URL.createObjectURL(new Blob([buffer], { type: "audio/wav" }));
 };
 
 const engagePlaybackSession = (): void => {
@@ -55,7 +55,7 @@ const engagePlaybackSession = (): void => {
   if (!unmuteElement) {
     unmuteElement = new Audio(createSilentWavUrl());
     unmuteElement.loop = true;
-    unmuteElement.preload = 'auto';
+    unmuteElement.preload = "auto";
   }
   // Rejection just means we stay in ambient mode — no worse than before
   unmuteElement.play().catch(() => {});
@@ -84,7 +84,7 @@ export const initAudio = async (): Promise<void> => {
   // iOS can leave the context "interrupted" after a phone call or
   // backgrounding, and Tone.start() alone doesn't always recover it
   const rawContext = Tone.getContext().rawContext;
-  if (rawContext.state !== 'running') {
+  if (rawContext.state !== "running") {
     await rawContext.resume();
   }
 
@@ -92,14 +92,14 @@ export const initAudio = async (): Promise<void> => {
   if (!synth) {
     synth = new Tone.Synth({
       oscillator: {
-        type: 'sine'
+        type: "sine",
       },
       envelope: {
         attack: 0.005,
         decay: 0.1,
         sustain: 0.3,
-        release: 1
-      }
+        release: 1,
+      },
     }).toDestination();
   }
 };
@@ -138,7 +138,7 @@ export const playMelody = async (units: SoundUnit[]): Promise<number> => {
       synth?.triggerAttackRelease(
         unit.note,
         Math.max(duration - 0.06, 0.05),
-        start + offset
+        start + offset,
       );
     }
     offset += duration;

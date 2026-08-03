@@ -1,6 +1,6 @@
-import { error } from '@sveltejs/kit';
-import { getAlphabet } from '$lib/data/alphabets';
-import type { PageLoad } from './$types';
+import { error } from "@sveltejs/kit";
+import { getAlphabet } from "$lib/data/alphabets";
+import type { PageLoad } from "./$types";
 
 export const load: PageLoad = ({ params }) => {
   const alphabet = getAlphabet(params.alphabet);

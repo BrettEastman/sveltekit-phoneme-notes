@@ -367,7 +367,7 @@ export const french: Alphabet = {
   id: "french",
   name: "Cryptogramme Phonétique",
   description:
-    "The 37 sounds of the French language: vowels, semivowels, nasals, plosives, fricatives, and liquids. Each sound is represented by a unique pitch and duration combination. Type one French word to hear its melody.",
+    "The 37 sounds of the French language: vowels, semivowels, nasals, plosives, fricatives, and liquids. Each sound is represented by a unique pitch and duration combination.",
   clef: "treble",
   kind: "phoneme",
   categories: [

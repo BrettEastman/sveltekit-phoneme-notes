@@ -16,7 +16,7 @@
 
   const categoryLabel = $derived(
     alphabet.categories.find((category) => category.id === unit.category)
-      ?.label ?? unit.category
+      ?.label ?? unit.category,
   );
 
   let playing = $state(false);

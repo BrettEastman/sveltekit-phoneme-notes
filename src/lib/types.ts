@@ -3,9 +3,9 @@
 // "unit" is one symbol in it. Alphabets carry their own categories, clef,
 // and tokenizer kind, so new symbol sets are pure data.
 
-export type Clef = 'treble' | 'bass';
+export type Clef = "treble" | "bass";
 
-export type NoteheadStyle = 'normal' | 'x' | 'triangle-inverted';
+export type NoteheadStyle = "normal" | "x" | "triangle-inverted";
 
 export interface GraceOrnament {
   note: string;
@@ -51,7 +51,7 @@ export interface Alphabet {
   // Default clef; individual units may override
   clef: Clef;
   // Picks the text → units tokenizer: French spelling rules vs letter lookup
-  kind: 'phoneme' | 'letter';
+  kind: "phoneme" | "letter";
   // Display order of the index page sections
   categories: AlphabetCategory[];
   units: SoundUnit[];

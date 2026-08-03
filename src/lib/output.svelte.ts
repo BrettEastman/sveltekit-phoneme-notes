@@ -7,27 +7,27 @@ import {
   listOutputs,
   midiSupported,
   onMidiStateChange,
-  type MidiOutputInfo
-} from './midi';
+  type MidiOutputInfo,
+} from "./midi";
 
-export const SYNTH_OUTPUT = 'synth';
+export const SYNTH_OUTPUT = "synth";
 
-const STORAGE_KEY = 'phoneme-notes:output';
+const STORAGE_KEY = "phoneme-notes:output";
 
 export const outputState = $state({
   selectedId: SYNTH_OUTPUT as string,
   outputs: [] as MidiOutputInfo[],
-  midiReady: false
+  midiReady: false,
 });
 
 const storedId = (): string => {
-  if (typeof localStorage === 'undefined') return SYNTH_OUTPUT;
+  if (typeof localStorage === "undefined") return SYNTH_OUTPUT;
   return localStorage.getItem(STORAGE_KEY) ?? SYNTH_OUTPUT;
 };
 
 export const selectOutput = (id: string): void => {
   outputState.selectedId = id;
-  if (typeof localStorage !== 'undefined') {
+  if (typeof localStorage !== "undefined") {
     localStorage.setItem(STORAGE_KEY, id);
   }
 };
@@ -36,7 +36,10 @@ const refreshOutputs = (): void => {
   outputState.outputs = listOutputs();
   const available = (id: string) =>
     outputState.outputs.some((output) => output.id === id);
-  if (outputState.selectedId !== SYNTH_OUTPUT && !available(outputState.selectedId)) {
+  if (
+    outputState.selectedId !== SYNTH_OUTPUT &&
+    !available(outputState.selectedId)
+  ) {
     // Device unplugged — play through the synth, but keep the stored
     // preference so a replug reselects it below
     outputState.selectedId = SYNTH_OUTPUT;
@@ -69,9 +72,9 @@ export const restoreMidiIfGranted = async (): Promise<void> => {
   if (storedId() === SYNTH_OUTPUT) return;
   try {
     const status = await navigator.permissions.query({
-      name: 'midi' as PermissionName
+      name: "midi" as PermissionName,
     });
-    if (status.state === 'granted') {
+    if (status.state === "granted") {
       await enableMidi();
     }
   } catch {

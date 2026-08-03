@@ -9,7 +9,7 @@
     Stave,
     StaveNote,
     StaveTie,
-    Voice
+    Voice,
   } from "vexflow";
   import { beatsToNotation, parseNote, staffSteps } from "./music";
   import type { Clef, SoundUnit } from "./types";
@@ -33,7 +33,7 @@
     units.some(
       (u) =>
         (u.note && staffSteps(u.note) > A6_STEPS) ||
-        (u.grace && staffSteps(u.grace.note) > A6_STEPS)
+        (u.grace && staffSteps(u.grace.note) > A6_STEPS),
     );
 
   let container: HTMLDivElement | undefined = $state();
@@ -60,7 +60,7 @@
         const restNote = new StaveNote({
           keys: [REST_KEY[clef]],
           duration: `${vexDuration}r`,
-          clef
+          clef,
         });
         if (dotted) {
           Dot.buildAndAttach([restNote], { all: true });
@@ -75,7 +75,7 @@
         const staveNote = new StaveNote({
           keys: [parsed.vexKey],
           duration: vexDuration,
-          clef
+          clef,
         });
         if (i === 0 && parsed.accidental) {
           staveNote.addModifier(new Accidental(parsed.accidental));
@@ -92,7 +92,7 @@
           keys: [parseNote(unit.grace.note).vexKey],
           duration: "8",
           slash: true,
-          clef
+          clef,
         });
         notes[0].addModifier(new GraceNoteGroup([grace], true));
       }
@@ -110,7 +110,7 @@
         firstNote: notes[i - 1],
         lastNote: notes[i],
         firstIndexes: [0],
-        lastIndexes: [0]
+        lastIndexes: [0],
       })
         .setContext(context)
         .draw();

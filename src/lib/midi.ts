@@ -3,8 +3,8 @@
 // navigator.requestMIDIAccess; Safari does not, so all UI gates on
 // midiSupported().
 
-import { beatsToSeconds, parseNote } from './music';
-import type { SoundUnit } from './types';
+import { beatsToSeconds, parseNote } from "./music";
+import type { SoundUnit } from "./types";
 
 export interface MidiOutputInfo {
   id: string;
@@ -14,13 +14,13 @@ export interface MidiOutputInfo {
 let access: MIDIAccess | null = null;
 
 export const midiSupported = (): boolean =>
-  typeof navigator !== 'undefined' && 'requestMIDIAccess' in navigator;
+  typeof navigator !== "undefined" && "requestMIDIAccess" in navigator;
 
 // Resolves once the browser grants MIDI access (first call may show a
 // permission prompt, so call from a user gesture). Cached afterwards.
 export const initMidi = async (): Promise<MIDIAccess> => {
   if (!midiSupported()) {
-    throw new Error('Web MIDI is not supported in this browser');
+    throw new Error("Web MIDI is not supported in this browser");
   }
   if (!access) {
     access = await navigator.requestMIDIAccess();
@@ -32,7 +32,7 @@ export const listOutputs = (): MidiOutputInfo[] =>
   access
     ? [...access.outputs.values()].map((output) => ({
         id: output.id,
-        name: output.name ?? output.id
+        name: output.name ?? output.id,
       }))
     : [];
 
@@ -41,8 +41,8 @@ export const getOutput = (id: string): MIDIOutput | null =>
 
 // Fires on device hot-plug/unplug. Returns an unsubscribe function.
 export const onMidiStateChange = (listener: () => void): (() => void) => {
-  access?.addEventListener('statechange', listener);
-  return () => access?.removeEventListener('statechange', listener);
+  access?.addEventListener("statechange", listener);
+  return () => access?.removeEventListener("statechange", listener);
 };
 
 const SEMITONES: Record<string, number> = {
@@ -52,13 +52,13 @@ const SEMITONES: Record<string, number> = {
   F: 5,
   G: 7,
   A: 9,
-  B: 11
+  B: 11,
 };
 
 // Scientific pitch name → MIDI note number (A4 = 69)
 export const noteToMidi = (note: string): number => {
   const { letter, accidental, octave } = parseNote(note);
-  const shift = accidental === '#' ? 1 : accidental === 'b' ? -1 : 0;
+  const shift = accidental === "#" ? 1 : accidental === "b" ? -1 : 0;
   return (octave + 1) * 12 + SEMITONES[letter] + shift;
 };
 
@@ -71,7 +71,10 @@ const VELOCITY = 96;
 // slightly so repeated pitches articulate. MIDIOutput.send timestamps are
 // performance.now()-based milliseconds, so the whole melody can be queued up
 // front. Returns the total duration in seconds.
-export const playMelodyMidi = (output: MIDIOutput, units: SoundUnit[]): number => {
+export const playMelodyMidi = (
+  output: MIDIOutput,
+  units: SoundUnit[],
+): number => {
   const start = performance.now() + 50;
   let offset = 0;
   for (const unit of units) {
