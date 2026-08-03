@@ -11,9 +11,14 @@
     StaveNote,
     StaveTie,
     Voice,
-    type Note
+    type Note,
   } from "vexflow";
-  import { beatsToNotation, parseNote, staffSteps, type ParsedNote } from "./music";
+  import {
+    beatsToNotation,
+    parseNote,
+    staffSteps,
+    type ParsedNote,
+  } from "./music";
   import type { Clef, SoundUnit } from "./types";
 
   interface Props {
@@ -36,7 +41,7 @@
     melody.some(
       (u) =>
         (u.note && staffSteps(u.note) > A6_STEPS) ||
-        (u.grace && staffSteps(u.grace.note) > A6_STEPS)
+        (u.grace && staffSteps(u.grace.note) > A6_STEPS),
     );
 
   const renderNotation = () => {
@@ -74,7 +79,7 @@
           const restNote = new StaveNote({
             keys: [REST_KEY[currentClef]],
             duration: `${vexDuration}r`,
-            clef: currentClef
+            clef: currentClef,
           });
           if (dotted) {
             Dot.buildAndAttach([restNote], { all: true });
@@ -99,7 +104,7 @@
         const staveNote = new StaveNote({
           keys: [parsed.vexKey],
           duration: vexDuration,
-          clef: currentClef
+          clef: currentClef,
         });
         if (dotted) {
           Dot.buildAndAttach([staveNote], { all: true });
@@ -122,7 +127,7 @@
           keys: [parsedGrace.vexKey],
           duration: "8",
           slash: true,
-          clef: currentClef
+          clef: currentClef,
         });
         applyAccidental(grace, parsedGrace);
         unitNotes[0].addModifier(new GraceNoteGroup([grace], true));
@@ -158,7 +163,7 @@
         firstNote: tickables[from],
         lastNote: tickables[to],
         firstIndexes: [0],
-        lastIndexes: [0]
+        lastIndexes: [0],
       })
         .setContext(context)
         .draw();
