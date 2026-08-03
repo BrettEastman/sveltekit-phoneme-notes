@@ -48,12 +48,7 @@
 
 <div class="melody-page">
   <header>
-    <h1>Word Melody</h1>
-    <p>
-      Type a word or short phrase in English and hear it as a melody. Each
-      {alphabet.kind === "phoneme" ? "sound" : "character"} becomes its note from
-      the {alphabet.name} alphabet.
-    </p>
+    <h3>Enter text to hear it as a melody</h3>
   </header>
 
   <div class="melody-card">

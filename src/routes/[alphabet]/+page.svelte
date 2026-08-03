@@ -55,7 +55,7 @@
     font-size: var(--text-md);
     color: var(--color-muted);
     margin: 4px auto 0;
-    max-width: 620px;
+    max-width: 400px;
   }
 
   header p :global(a) {

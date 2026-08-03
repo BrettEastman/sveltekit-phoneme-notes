@@ -12,10 +12,9 @@
 
 <header>
   <p>
-    A musical cryptogram: a composition system that maps each sound or letter of
-    a language to a specific musical pitch and duration, so text can be
-    transcribed into music. Pick an alphabet to explore its sounds. You can type
-    a single word and hear it as a melody.
+    A music cryptogram is a composition tool which can map each sound or letter
+    to a specific pitch and duration, so speech or text can be transcribed into
+    music. Pick an alphabet to explore further.
   </p>
 </header>
 
@@ -42,12 +41,12 @@
     font-size: var(--text-lg);
     color: var(--color-muted);
     margin: 8px auto 0;
-    max-width: 640px;
+    max-width: 600px;
   }
 
   .alphabet-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: var(--space-4);
   }
 

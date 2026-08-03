@@ -226,7 +226,7 @@ export const contraforte: Alphabet = {
   id: "contraforte",
   name: "Contraforte",
   description:
-    "An original A–Z alphabet for contraforte, a cousin of the contrabassoon, living deep in the bass clef, from B1 up to C#5.",
+    "An original A–Z alphabet for contraforte, a cousin of the contrabassoon",
   clef: "bass",
   kind: "letter",
   categories: [{ id: "letter", label: "Letters" }],
