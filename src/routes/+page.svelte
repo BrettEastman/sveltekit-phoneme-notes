@@ -1,5 +1,9 @@
 <script lang="ts">
   import { alphabets } from "$lib/data/alphabets";
+
+  function stripHtml(text: string): string {
+    return text.replace(/<[^>]*>/g, "");
+  }
 </script>
 
 <svelte:head>
@@ -8,10 +12,10 @@
 
 <header>
   <p>
-    A musical cryptogram: a composition system that maps each sound of a
-    language to a specific musical pitch and duration, so text can be
-    transcribed into music. Pick an alphabet to explore its sounds — or type
-    words and hear them as melodies.
+    A musical cryptogram: a composition system that maps each sound or letter of
+    a language to a specific musical pitch and duration, so text can be
+    transcribed into music. Pick an alphabet to explore its sounds. You can type
+    a single word and hear it as a melody.
   </p>
 </header>
 
@@ -19,7 +23,7 @@
   {#each alphabets as alphabet (alphabet.id)}
     <a class="alphabet-card" href="/{alphabet.id}">
       <h2>{alphabet.name}</h2>
-      <p class="card-description">{alphabet.description}</p>
+      <p class="card-description">{stripHtml(alphabet.description)}</p>
       <p class="card-meta">
         {alphabet.units.length} units · {alphabet.clef} clef
         <span class="card-arrow">→</span>

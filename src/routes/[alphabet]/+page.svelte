@@ -13,8 +13,10 @@
 
 <header>
   <h1>{alphabet.name}</h1>
-  <p>{alphabet.description}</p>
-  <a class="melody-cta" href="/{alphabet.id}/melody">Turn a word into a melody →</a>
+  <p>{@html alphabet.description}</p>
+  <a class="melody-cta" href="/{alphabet.id}/melody"
+    >Turn a word into a melody →</a
+  >
 </header>
 
 {#each alphabet.categories as category (category.id)}
@@ -25,7 +27,7 @@
         <a class="unit-tile" href="/{alphabet.id}/unit/{unit.slug}">
           <span class="tile-symbol">{unit.symbol}</span>
           <span class="tile-note">
-            {unit.rest ? 'rest' : prettyNoteName(unit.note ?? '')} · {unit.duration}
+            {unit.rest ? "rest" : prettyNoteName(unit.note ?? "")} · {unit.duration}
           </span>
         </a>
       {/each}
@@ -54,6 +56,17 @@
     color: var(--color-muted);
     margin: 4px auto 0;
     max-width: 620px;
+  }
+
+  header p :global(a) {
+    color: var(--color-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+  }
+
+  header p :global(a:hover) {
+    color: var(--color-accent);
   }
 
   .melody-cta {

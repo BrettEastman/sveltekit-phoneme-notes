@@ -16,7 +16,7 @@
   const melodyUnits = $derived(
     result.matches
       .map((match) => match.unit)
-      .filter((unit): unit is SoundUnit => unit !== null)
+      .filter((unit): unit is SoundUnit => unit !== null),
   );
 
   const emptyHint = $derived(
@@ -24,7 +24,7 @@
       ? "One French word, letters only. Accents welcome."
       : alphabet.units.some((unit) => unit.slug === "space")
         ? "Words, phrases, punctuation — spaces and punctuation become rests."
-        : "Any word — letters A to Z."
+        : "Any word — letters A to Z.",
   );
 
   const handlePlay = async () => {
@@ -50,9 +50,9 @@
   <header>
     <h1>Word Melody</h1>
     <p>
-      Type something and hear it as a melody — each
-      {alphabet.kind === "phoneme" ? "sound" : "character"} becomes its note
-      from the {alphabet.name} alphabet.
+      Type a word or short phrase in English and hear it as a melody. Each
+      {alphabet.kind === "phoneme" ? "sound" : "character"} becomes its note from
+      the {alphabet.name} alphabet.
     </p>
   </header>
 
@@ -66,7 +66,9 @@
     >
       <input
         type="text"
-        placeholder={alphabet.kind === "phoneme" ? "bonjour" : "la musique"}
+        placeholder={alphabet.kind === "phoneme"
+          ? "one word in French"
+          : "word or phrase in English"}
         maxlength={alphabet.kind === "phoneme" ? 24 : 80}
         autocomplete="off"
         autocapitalize="none"
@@ -91,7 +93,9 @@
     {:else if melodyUnits.length > 0}
       <p class="readout" aria-label="Units">
         {#each melodyUnits as unit, i (i)}
-          <a class="phoneme" href="/{alphabet.id}/unit/{unit.slug}">{unit.symbol}</a>
+          <a class="phoneme" href="/{alphabet.id}/unit/{unit.slug}"
+            >{unit.symbol}</a
+          >
         {/each}
       </p>
 
@@ -101,7 +105,7 @@
 
       {#if alphabet.kind === "phoneme"}
         <p class="hint">
-          Read by simple spelling rules — some words won't be perfect.
+          Read by simple spelling rules. Some words won't be perfect.
         </p>
       {/if}
     {:else}
