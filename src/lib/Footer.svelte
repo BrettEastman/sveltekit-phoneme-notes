@@ -4,7 +4,7 @@
       label: "Source code",
       href: "https://github.com/BrettEastman/sveltekit-phoneme-notes",
     },
-    { label: "Developer portfolio", href: "https://www.bretteastman.dev/" },
+    { label: "Music portfolio", href: "https://www.brettaustineastman.com/" },
   ];
 
   // Paths from Material Design Icons (mdi), matching the bae_astro footer
