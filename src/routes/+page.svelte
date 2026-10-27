@@ -71,6 +71,9 @@
 
   .alphabet-card h2 {
     margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: normal;
     font-size: 1.5rem;
     color: var(--color-ink);
   }
