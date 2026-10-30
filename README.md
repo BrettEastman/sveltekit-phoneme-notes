@@ -2,6 +2,8 @@
 
 A web app as a tool for exploring a musical cryptogram: a composition system that maps each sound of a language to a specific musical pitch and duration, so that text can be transcribed into music. This serialized compositional approach creates a unique way to visualize and hear the relationship between language and music. It can be adhered to strictly for study, loosely as a creative exercise, or used as a starting point for further evolution.
 
+<img width="930" height="722" alt="Screenshot 2026-10-29 at 6 43 08 PM" src="https://github.com/user-attachments/assets/c005a939-6236-4d01-9932-b32c4d780ce8" />
+
 The app hosts **four alphabets**, selectable from the landing page:
 
 - **French Phonemes** — the 37 sounds of French (vowels, semivowels, nasal vowels, plosives, nasal consonants, fricatives, and liquids), each paired with a note and rhythm
@@ -93,11 +95,7 @@ pnpm build      # production build
 pnpm preview    # preview the production build
 ```
 
-## Roadmap
-
-- ~~Transcription: type a word and hear it played as a melody~~ ✅ — see [Word Melody](#word-melody)
-- ~~Phrase transcription: multi-word melodies with rests between words~~ ✅ — Complete Flute maps spaces and punctuation to rests
-- ~~Additional alphabets (A–Z letters, other phoneme sets)~~ ✅ — Complete Flute, Messiaen, and Contraforte
+## Future improvements
 - More alphabets from the score: La Musique and Contrabass flute (need stroke counts and glissandi)
 - Multi-note units: the Complete Flute `?` two-note figure and `!` chord
 - X and inverted-triangle noteheads (data is captured; rendering pending), matching the scores
