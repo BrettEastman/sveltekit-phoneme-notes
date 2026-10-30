@@ -1,6 +1,7 @@
-// Rule-based French grapheme-to-phoneme conversion. Turns a single written
-// word into a sequence of cryptogram units (see data/alphabets/french.ts).
-// The rules are
+// Rule-based French grapheme-to-phoneme conversion. Turns a written word or
+// sentence into a sequence of cryptogram units (see data/alphabets/french.ts).
+// Word boundaries don't sound: a sentence is one continuous phoneme stream
+// ("il n'y a pas de temps" → i l n j a p a d ə t ɑ̃). The rules are
 // deliberately approximate: French spelling is regular enough that an ordered
 // list of context-sensitive rules plus a small exception list reads most words
 // correctly, and occasional misses are acceptable in a playful feature.
@@ -57,8 +58,13 @@ const nasalContext = ({ word, end }: RuleContext): boolean => {
   );
 };
 
+// Soft c/g (and silent gu-u) before e, i, y — false at the end of the word
+const nextIsFrontVowel = ({ word, end }: RuleContext): boolean =>
+  word[end] !== undefined && "eiy".includes(word[end]);
+
+// A silent final -e doesn't count, so "vie", "rue", "joue" keep their vowel
 const nextIsVowel = ({ word, end }: RuleContext): boolean =>
-  isVowelLetter(word[end]);
+  isVowelLetter(word[end]) && !(word[end] === "e" && end + 1 === word.length);
 
 // Whole-word irregulars: function words with sounded schwa, common words the
 // rules misread, and numbers with sounded final consonants
@@ -74,6 +80,7 @@ const EXCEPTIONS: Record<string, string[]> = {
   se: ["s", "ə"],
   ne: ["n", "ə"],
   et: ["e"],
+  es: ["ɛ"],
   est: ["ɛ"],
   les: ["l", "e"],
   des: ["d", "e"],
@@ -175,7 +182,7 @@ const RULES: Rule[] = [
   { g: "ph", out: ["f"] },
   { g: "th", out: ["t"] },
   { g: "qu", out: ["k"] },
-  { g: "gu", out: ["g"], when: (c) => "eiy".includes(c.word[c.end] ?? "") },
+  { g: "gu", out: ["g"], when: nextIsFrontVowel },
   // Doubled consonants collapse
   { g: "ss", out: ["s"] },
   { g: "ll", out: ["l"] },
@@ -189,7 +196,7 @@ const RULES: Rule[] = [
   {
     g: "cc",
     out: ["k", "s"],
-    when: (c) => "eiy".includes(c.word[c.end] ?? ""),
+    when: nextIsFrontVowel,
   },
   { g: "cc", out: ["k"] },
   { g: "bb", out: ["b"] },
@@ -251,9 +258,9 @@ const RULES: Rule[] = [
   { g: "u", out: ["y"] },
   // Consonants
   { g: "ç", out: ["s"] },
-  { g: "c", out: ["s"], when: (c) => "eiy".includes(c.word[c.end] ?? "") },
+  { g: "c", out: ["s"], when: nextIsFrontVowel },
   { g: "c", out: ["k"] },
-  { g: "g", out: ["ʒ"], when: (c) => "eiy".includes(c.word[c.end] ?? "") },
+  { g: "g", out: ["ʒ"], when: nextIsFrontVowel },
   { g: "g", out: ["g"] },
   {
     g: "s",
@@ -291,26 +298,26 @@ const symbolsToMatches = (
     }))
     .filter((match) => match.unit !== null);
 
-export const phonemize = (input: string): PhonemizeResult => {
-  const word = input.trim().toLowerCase().normalize("NFC").replace(/oe/g, "œ");
+// "c'" only appears in "c'est" / "ç'a", where it is always soft
+const ELIDED_EXCEPTIONS: Record<string, string[]> = {
+  c: ["s"],
+};
 
-  if (word === "") {
-    return { word, matches: [], error: null };
-  }
-  if (!/^[a-zàâäçéèêëîïôöùûüœ]+$/.test(word)) {
-    return { word, matches: [], error: "One French word, letters only." };
-  }
-  if (word.length > 24) {
-    return {
-      word,
-      matches: [],
-      error: "That is a long word! Try one under 25 letters.",
-    };
-  }
-
-  const exception = EXCEPTIONS[word];
+// An elided word ("n'", "qu'", "jusqu'", "aujourd'") has lost its final
+// vowel, so its last consonant sounds and whole-word exceptions don't apply
+const phonemizeWord = (word: string, elided: boolean): PhonemeMatch[] => {
+  const exception = elided ? ELIDED_EXCEPTIONS[word] : EXCEPTIONS[word];
   if (exception) {
-    return { word, matches: symbolsToMatches(exception, word), error: null };
+    return symbolsToMatches(exception, word);
+  }
+
+  // A plural -s is silent and leaves the singular's final-letter rules intact
+  // ("mots" reads like "mot", "vies" like "vie", "villes" like "ville")
+  if (!elided && word.length > 2 && /[^s]s$/.test(word)) {
+    return [
+      ...phonemizeWord(word.slice(0, -1), false),
+      { grapheme: "s", unit: null },
+    ];
   }
 
   const matches: PhonemeMatch[] = [];
@@ -319,6 +326,7 @@ export const phonemize = (input: string): PhonemizeResult => {
     // Generic silent final consonant ("chat", "sans", "grand"); final c is
     // also silent after a nasal ("blanc" is an exception either way)
     if (
+      !elided &&
       i === word.length - 1 &&
       isConsonantLetter(word[i]) &&
       !SOUNDED_FINALS.includes(word[i])
@@ -348,7 +356,208 @@ export const phonemize = (input: string): PhonemizeResult => {
     i += rule.g.length;
   }
 
-  return { word, matches, error: null };
+  return matches;
+};
+
+interface WordToken {
+  word: string;
+  elided: boolean;
+  // Joined to the previous word by a hyphen ("est-il", "a-t-il")
+  hyphenated: boolean;
+}
+
+// Obligatory liaisons: determiners, subject/object pronouns, and a few short
+// prepositions/adverbs sound their final consonant before a vowel
+// ("les amis" → l e z a m i, "un ami" → œ̃ n a m i, "quand il" → k ɑ̃ t i l)
+const LIAISONS: Record<string, string> = {
+  les: "z",
+  des: "z",
+  mes: "z",
+  tes: "z",
+  ses: "z",
+  ces: "z",
+  nos: "z",
+  vos: "z",
+  leurs: "z",
+  aux: "z",
+  deux: "z",
+  trois: "z",
+  quels: "z",
+  quelles: "z",
+  plusieurs: "z",
+  nous: "z",
+  vous: "z",
+  ils: "z",
+  elles: "z",
+  dans: "z",
+  chez: "z",
+  très: "z",
+  un: "n",
+  aucun: "n",
+  mon: "n",
+  ton: "n",
+  son: "n",
+  on: "n",
+  en: "n",
+  quand: "t",
+};
+
+// Inverted subject pronouns pull the verb's final t/d into liaison
+// ("sont-ils" → s ɔ̃ t i l, "prend-elle" → p ʁ ɑ̃ t ɛ l)
+const INVERTED_PRONOUNS = new Set(["il", "ils", "elle", "elles", "on"]);
+
+// Vowel-initial words that still block liaison, and common aspirated-h words
+// (most h is mute, so "les hommes" → l e z ɔ m)
+const LIAISON_BLOCKERS = new Set([
+  "et",
+  "ou",
+  "oui",
+  "onze",
+  "onzième",
+  "huit",
+  "huitième",
+  "haut",
+  "haute",
+  "hauts",
+  "hautes",
+  "héros",
+  "hibou",
+  "hiboux",
+  "honte",
+  "haricot",
+  "haricots",
+  "hasard",
+  "haine",
+  "hors",
+  "homard",
+  "hall",
+  "hache",
+]);
+
+const PLURAL_SUBJECTS = new Set(["ils", "elles"]);
+
+// Object/negation pronouns that can sit between subject and verb
+// ("ils ne me parlent", "elles s'en vont", "ils les aiment")
+const CLITICS = new Set([
+  "ne", "n", "me", "m", "te", "t", "se", "s", "le", "la", "les", "l",
+  "lui", "leur", "y", "en", "nous", "vous",
+]);
+
+// "-ent" is silent on 3rd-person plural verbs ("ils parlent") but sounds on
+// other words ("souvent", "moment"), so it needs the subject to decide
+const isPluralVerb = (tokens: WordToken[], index: number): boolean => {
+  const { word } = tokens[index];
+  if (word.length <= 3 || !word.endsWith("ent")) return false;
+  const next = tokens[index + 1];
+  if (next?.hyphenated && PLURAL_SUBJECTS.has(next.word)) return true;
+  for (let back = index - 1; back >= 0; back--) {
+    const previous = tokens[back].word;
+    if (PLURAL_SUBJECTS.has(previous)) return true;
+    if (!CLITICS.has(previous)) return false;
+  }
+  return false;
+};
+
+const startsWithVowelSound =(token: WordToken | undefined): boolean => {
+  if (!token || LIAISON_BLOCKERS.has(token.word)) return false;
+  const first = token.word[0];
+  return isVowelLetter(first) || first === "h";
+};
+
+const liaisonAfter = (
+  token: WordToken,
+  next: WordToken | undefined,
+): string | null => {
+  // The euphonic "-t-" already is the liaison consonant
+  if (token.elided || !next || token.word === "t") return null;
+  if (
+    next.hyphenated &&
+    INVERTED_PRONOUNS.has(next.word) &&
+    /[td]$/.test(token.word)
+  ) {
+    return "t";
+  }
+  if (next.hyphenated) return null;
+  return startsWithVowelSound(next) ? (LIAISONS[token.word] ?? null) : null;
+};
+
+const MAX_LENGTH = 80;
+
+// Sentence punctuation carries no sound in the phoneme alphabet
+const PUNCTUATION = /[.,;:!?«»"“”…()]/g;
+
+export const phonemize = (input: string): PhonemizeResult => {
+  const text = input
+    .trim()
+    .toLowerCase()
+    .normalize("NFC")
+    .replace(/oe/g, "œ")
+    .replace(/’/g, "'")
+    .replace(PUNCTUATION, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (text === "") {
+    return { word: text, matches: [], error: null };
+  }
+  if (!/^[a-zàâäçéèêëîïôöùûüœ' -]+$/.test(text)) {
+    return {
+      word: text,
+      matches: [],
+      error: "French words only — letters, spaces, and apostrophes.",
+    };
+  }
+  if (text.length > MAX_LENGTH) {
+    return {
+      word: text,
+      matches: [],
+      error: `That is a long one! Try under ${MAX_LENGTH} characters.`,
+    };
+  }
+
+  // Spaces and hyphens separate words; an apostrophe ends an elided word
+  const tokens: WordToken[] = [];
+  for (const chunk of text.split(" ")) {
+    chunk.split("-").forEach((hyphenPart, hyphenIndex) => {
+      const parts = hyphenPart.split("'");
+      parts.forEach((part, index) => {
+        if (part !== "") {
+          tokens.push({
+            word: part,
+            elided: index < parts.length - 1,
+            hyphenated: hyphenIndex > 0 && index === 0,
+          });
+        }
+      });
+    });
+  }
+
+  const matches: PhonemeMatch[] = [];
+  tokens.forEach((token, index) => {
+    const { word, elided } = token;
+    const next = tokens[index + 1];
+    if (word === "y" && isVowelLetter(next?.word[0])) {
+      // "y" glides into a following vowel: "il y a" → i l j a, "n'y a" → n j a
+      matches.push(...symbolsToMatches(["j"], word));
+    } else if (word === "t" && token.hyphenated) {
+      // Euphonic t: "a-t-il" → a t i l
+      matches.push(...symbolsToMatches(["t"], word));
+    } else if (isPluralVerb(tokens, index)) {
+      // Read as the singular "-e" form: "parlent" like "parle", "aiment" like
+      // "aime", so the stem keeps its final consonant and non-nasal vowel
+      matches.push(...phonemizeWord(word.slice(0, -2), false));
+      matches.push({ grapheme: "nt", unit: null });
+    } else {
+      matches.push(...phonemizeWord(word, elided));
+    }
+
+    const liaison = liaisonAfter(token, next);
+    if (liaison) {
+      matches.push(...symbolsToMatches([liaison], "‿"));
+    }
+  });
+
+  return { word: text, matches, error: null };
 };
 
 // Convenience: just the sounded units, in order
