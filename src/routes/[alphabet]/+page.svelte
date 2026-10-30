@@ -15,7 +15,7 @@
   <h1>{alphabet.name}</h1>
   <p>{@html alphabet.description}</p>
   <a class="melody-cta" href="/{alphabet.id}/melody"
-    >Turn a word into a melody →</a
+    >Turn words into a melody →</a
   >
 </header>
 

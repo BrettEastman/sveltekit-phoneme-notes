@@ -21,7 +21,7 @@
 
   const emptyHint = $derived(
     alphabet.kind === "phoneme"
-      ? "One French word, letters only. Accents welcome."
+      ? "A French word or sentence. Accents welcome — spaces don't sound."
       : alphabet.units.some((unit) => unit.slug === "space")
         ? "Words, phrases, punctuation — spaces and punctuation become rests."
         : "Any word — letters A to Z.",
@@ -62,9 +62,9 @@
       <input
         type="text"
         placeholder={alphabet.kind === "phoneme"
-          ? "one word in French"
+          ? "word or sentence in French"
           : "word or phrase in English"}
-        maxlength={alphabet.kind === "phoneme" ? 24 : 80}
+        maxlength={80}
         autocomplete="off"
         autocapitalize="none"
         spellcheck="false"
