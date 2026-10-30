@@ -4,6 +4,8 @@ A web app as a tool for exploring a musical cryptogram: a composition system tha
 
 <img width="930" height="722" alt="Screenshot 2026-10-29 at 6 43 08 PM" src="https://github.com/user-attachments/assets/c005a939-6236-4d01-9932-b32c4d780ce8" />
 
+[Have a look online!](https://musiccryptogram.app/)
+
 The app hosts **four alphabets**, selectable from the landing page:
 
 - **French Phonemes** — the 37 sounds of French (vowels, semivowels, nasal vowels, plosives, nasal consonants, fricatives, and liquids), each paired with a note and rhythm
